@@ -11,15 +11,15 @@ class Book:
     description:str
     author:str
     rating:int
-    published_date:int
+    publish_year:int
 
-    def __init__(self,id,title,description,author,rating,published_date):
+    def __init__(self,id,title,description,author,rating,publish_year):
         self.id=id
         self.title=title
         self.description=description
         self.author=author
         self.rating=rating
-        self.published_date=published_date
+        self.publish_year=publish_year
 
 
 class BookRequest(BaseModel):
@@ -28,7 +28,7 @@ class BookRequest(BaseModel):
     author:str=Field(min_length=1)
     description:str=Field(min_length=1,max_length=100)
     rating:int=Field(gt=-1,lt=6)
-    published_dateL:int=Field(gt=1999,lt=2031)
+    publish_year:int=Field(gt=1999,lt=2031)
  
 BOOKS=[Book(1,"Title One","Description One","Author One",5,2030),
        Book(2,"Title Two","Description Two","Author Two",4,2030),
@@ -58,10 +58,10 @@ def read_book_by_rating(book_rating:int=Query(gt=0,lt=6)):
 
 
 @app.get("/books/publish/")
-def read_all_books_by_publish_date(published_date:int=Query(gt=1999,lt=2031)):
+def read_all_books_by_publish_date(publish_year:int=Query(gt=1999,lt=2031)):
     books_to_return=[]
     for book in BOOKS:
-        if book.published_date==published_date:
+        if book.publish_year==publish_year:
             books_to_return.append(book)
     return books_to_return
 
