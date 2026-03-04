@@ -1,6 +1,7 @@
 from fastapi import FastAPI,Body
 from pydantic import BaseModel,Field
 
+from fastapi import FastAPI,Path,Query,HTTPException
 
 app=FastAPI()
 
@@ -10,13 +11,15 @@ class Book:
     description:str
     author:str
     rating:int
+    published_date:int
 
-    def __init__(self,id,title,description,author,rating):
+    def __init__(self,id,title,description,author,rating,published_date):
         self.id=id
         self.title=title
         self.description=description
         self.author=author
         self.rating=rating
+        self.published_date=published_date
 
 
 class BookRequest(BaseModel):
@@ -25,12 +28,12 @@ class BookRequest(BaseModel):
     author:str=Field(min_length=1)
     description:str=Field(min_length=1,max_length=100)
     rating:int=Field(gt=-1,lt=6)
-    
+    published_dateL:int=Field(gt=1999,lt=2031)
  
-BOOKS=[Book(1,"Title One","Description One","Author One",5),
-       Book(2,"Title Two","Description Two","Author Two",4),
-       Book(3,"Title Three","Description Three","Author Three",3),
-       Book(4,"Title Four","Description Four","Author Four",2)]
+BOOKS=[Book(1,"Title One","Description One","Author One",5,2030),
+       Book(2,"Title Two","Description Two","Author Two",4,2030),
+       Book(3,"Title Three","Description Three","Author Three",3,2020),
+       Book(4,"Title Four","Description Four","Author Four",2,2025)]
 
 @app.get("/books/")
 
@@ -39,18 +42,26 @@ def read_All_books():
 
 
 @app.get("/books/{book_id}")
-def read_book(book_id:int):
+def read_book(book_id:int=Path(gt=0)):
     for book in BOOKS:
         if book.id==book_id:
             return book
-
-
+        raise HTTPException(status_code=404,detail="Book not found")
 
 @app.get("/books/")
-def read_book_by_rating(book_rating:int):
+def read_book_by_rating(book_rating:int=Query(gt=0,lt=6)):
     books_to_return=[]
     for book in BOOKS:
         if book.rating==book_rating:
+            books_to_return.append(book)
+    return books_to_return
+
+
+@app.get("/books/publish/")
+def read_all_books_by_publish_date(published_date:int=Query(gt=1999,lt=2031)):
+    books_to_return=[]
+    for book in BOOKS:
+        if book.published_date==published_date:
             books_to_return.append(book)
     return books_to_return
 
@@ -63,7 +74,7 @@ def create_book(book_request:BookRequest):
     )
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id:int):
+def delete_book(book_id:int=Path(gt=0)):
     for i in range(len(BOOKS)):
         if BOOKS[i].id==book_id:
             BOOKS.pop(i)
