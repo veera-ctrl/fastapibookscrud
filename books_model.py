@@ -1,6 +1,7 @@
 from fastapi import FastAPI,Body
 from pydantic import BaseModel,Field
 
+from fastapi import FastAPI,Path,Query,HTTPException
 
 app=FastAPI()
 
@@ -41,15 +42,14 @@ def read_All_books():
 
 
 @app.get("/books/{book_id}")
-def read_book(book_id:int):
+def read_book(book_id:int=Path(gt=0)):
     for book in BOOKS:
         if book.id==book_id:
             return book
-
-
+        raise HTTPException(status_code=404,detail="Book not found")
 
 @app.get("/books/")
-def read_book_by_rating(book_rating:int):
+def read_book_by_rating(book_rating:int=Query(gt=0,lt=6)):
     books_to_return=[]
     for book in BOOKS:
         if book.rating==book_rating:
@@ -58,7 +58,7 @@ def read_book_by_rating(book_rating:int):
 
 
 @app.get("/books/publish/")
-def read_all_books_by_publish_date(published_date:int):
+def read_all_books_by_publish_date(published_date:int=Query(gt=1999,lt=2031)):
     books_to_return=[]
     for book in BOOKS:
         if book.published_date==published_date:
@@ -74,7 +74,7 @@ def create_book(book_request:BookRequest):
     )
 
 @app.delete("/books/{book_id}")
-def delete_book(book_id:int):
+def delete_book(book_id:int=Path(gt=0)):
     for i in range(len(BOOKS)):
         if BOOKS[i].id==book_id:
             BOOKS.pop(i)
