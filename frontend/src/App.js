@@ -12,8 +12,9 @@ function App() {
     id: "",
     title: "",
     author: "",
-    year: "",
-    category: "",
+    description: "",
+    rating: "",
+    published_year: "",
   });
   const [editId, setEditId] = useState(null);
   const [message, setMessage] = useState("");
@@ -123,7 +124,7 @@ function App() {
 
   // Reset form
   const resetForm = () => {
-    setForm({ id: "", title: "", author: "", year: "", category: "" });
+    setForm({ id: "", title: "", author: "", description: "", rating: "", published_year: "" });
     setEditId(null);
   };
 
@@ -134,10 +135,13 @@ function App() {
     setMessage("");
     setError("");
     try {
+      // Map frontend fields to backend fields
       const bookData = {
-        ...form,
         id: Number(form.id),
-        year: Number(form.year),
+        title: form.title,
+        author: form.author,
+        year: Number(form.published_year),
+        category: form.description, // mapping description to category for backend
       };
       
       if (editId) {
@@ -161,8 +165,9 @@ function App() {
       id: book.id,
       title: book.title,
       author: book.author,
-      year: book.year,
-      category: book.category || "",
+      description: book.category || "", // mapping backend category to frontend description
+      rating: "", // rating not available in backend, leave empty
+      published_year: book.year || "",
     });
     setEditId(book.id);
     setMessage("");
@@ -244,18 +249,27 @@ function App() {
               />
               <input
                 type="number"
-                name="year"
-                placeholder="Year"
-                value={form.year}
+                name="published_year"
+                placeholder="Published Year"
+                value={form.published_year}
                 onChange={handleChange}
                 required
               />
               <input
                 type="text"
-                name="category"
-                placeholder="Category"
-                value={form.category}
+                name="description"
+                placeholder="Description"
+                value={form.description}
                 onChange={handleChange}
+                required
+              />
+              <input
+                type="number"
+                name="rating"
+                placeholder="Rating (1-5)"
+                value={form.rating}
+                onChange={handleChange}
+                required
               />
               <div className="form-actions">
                 <button className="btn" type="submit" disabled={loading}>
@@ -308,16 +322,22 @@ function App() {
                         Author
                       </th>
                       <th 
-                        className={`sortable ${sortField === 'year' ? `sort-${sortDirection}` : ''}`}
-                        onClick={() => handleSort('year')}
+                        className={`sortable ${sortField === 'description' ? `sort-${sortDirection}` : ''}`}
+                        onClick={() => handleSort('description')}
                       >
-                        Year
+                        Description
                       </th>
                       <th 
-                        className={`sortable ${sortField === 'category' ? `sort-${sortDirection}` : ''}`}
-                        onClick={() => handleSort('category')}
+                        className={`sortable ${sortField === 'rating' ? `sort-${sortDirection}` : ''}`}
+                        onClick={() => handleSort('rating')}
                       >
-                        Category
+                        Rating
+                      </th>
+                      <th 
+                        className={`sortable ${sortField === 'published_year' ? `sort-${sortDirection}` : ''}`}
+                        onClick={() => handleSort('published_year')}
+                      >
+                        Published Year
                       </th>
                       <th>Actions</th>
                     </tr>
@@ -328,10 +348,9 @@ function App() {
                         <td>{b.id}</td>
                         <td className="name-cell">{b.title}</td>
                         <td className="desc-cell">{b.author}</td>
-                        <td className="price-cell">{b.year}</td>
-                        <td>
-                          <span className="qty-badge">{b.category || "N/A"}</span>
-                        </td>
+                        <td>{b.category || "N/A"}</td>
+                        <td><span className="qty-badge">N/A</span></td>
+                        <td>{b.year}</td>
                         <td>
                           <div className="row-actions">
                             <button className="btn btn-edit" onClick={() => handleEdit(b)}>
@@ -346,7 +365,7 @@ function App() {
                     ))}
                     {filteredBooks.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="empty">
+                        <td colSpan={7} className="empty">
                           No books found.
                         </td>
                       </tr>
