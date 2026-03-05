@@ -1,10 +1,11 @@
-# Fastapi-Angular-postgree
+# FastAPI Angular PostgreSQL
 
 A FastAPI backend with Angular frontend application.
 
 ## Docker Setup
 
 ### Prerequisites
+
 - Docker installed on your machine
 - Google Cloud SDK (gcloud CLI) installed
 - A Google Cloud project with Cloud Run API enabled
@@ -31,21 +32,25 @@ docker-compose up --build
 ### Option 1: Using gcloud CLI
 
 1. **Set your project:**
+
    ```bash
    gcloud config set project YOUR_PROJECT_ID
    ```
 
 2. **Enable required APIs:**
+
    ```bash
    gcloud services enable run.googleapis.com containerregistry.googleapis.com
    ```
 
 3. **Authenticate Docker:**
+
    ```bash
    gcloud auth configure-docker
    ```
 
 4. **Build and deploy:**
+
    ```bash
    # Build the image
    docker build -t gcr.io/YOUR_PROJECT_ID/fastapi-app .
@@ -64,6 +69,7 @@ docker-compose up --build
 ### Option 2: Using Cloud Build
 
 1. **Submit build to Cloud Build:**
+
    ```bash
    gcloud builds submit --config cloudbuild.yaml
    ```
@@ -123,21 +129,21 @@ resource "google_cloud_run_service_iam_member" "allUsers" {
 The following environment variables can be configured:
 
 | Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | SQLite database path | `sqlite:///./books.db` |
-| `PYTHONDONTWRITEBYTECODE` | Disable .pyc files | `1` |
-| `PYTHONUNBUFFERED` | Unbuffered output | `1` |
+| --- | --- | --- |
+| DATABASE_URL | SQLite database path | sqlite:///./books.db |
+| PYTHONDONTWRITEBYTECODE | Disable .pyc files | 1 |
+| PYTHONUNBUFFERED | Unbuffered output | 1 |
 
 ## API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Get all books |
-| GET | `/all-books` | Get all books (alternate) |
-| GET | `/books/{book_id}` | Get a specific book |
-| POST | `/books/` | Create a new book |
-| PUT | `/books/{book_id}` | Update a book |
-| DELETE | `/books/{book_id}` | Delete a book |
+| --- | --- | --- |
+| GET | / | Get all books |
+| GET | /all-books | Get all books (alternate) |
+| GET | /books/{book_id} | Get a specific book |
+| POST | /books/ | Create a new book |
+| PUT | /books/{book_id} | Update a book |
+| DELETE | /books/{book_id} | Delete a book |
 
 ## Development
 

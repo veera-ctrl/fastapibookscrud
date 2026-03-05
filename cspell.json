@@ -1,0 +1,18 @@
+{
+  "version": "0.2",
+  "ignorePaths": [],
+  "words": [
+    "FastAPI",
+    "fastapi",
+    "PostgreSQL",
+    "postgree",
+    "uvicorn",
+    "cloudbuild",
+    "containerregistry",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONUNBUFFERED"
+  ],
+  "ignoreRegExpList": [],
+  "languageSettings": []
+}
+
