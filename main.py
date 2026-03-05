@@ -1,17 +1,12 @@
-from fastapi import FastAPI,Depends
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-
 from typing import Annotated
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-
 import models
+from database import engine, Base, SessionLocal, get_db
 
-from database import engine,Base,SessionLocal
-
-
-
-app=FastAPI()
+app = FastAPI()
 
 # CORS middleware to allow frontend communication
 app.add_middleware(
@@ -22,16 +17,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Create tables
 Base.metadata.create_all(bind=engine)
-
-def get_db():
-    db=SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-db_depends=Annotated[Session,Depends(get_db)]
 
 # Pydantic models
 class BookBase(BaseModel):
@@ -52,20 +39,24 @@ class BookUpdate(BaseModel):
     rating: int = 0
     published_year: int = 2024
 
+
 @app.get("/")
-def read_ALL(db:db_depends):
+def read_all(db: Annotated[Session, Depends(get_db)]):
     return db.query(models.BooksTable).all()
+
 
 @app.get("/all-books")
-def read_all_books(db:db_depends):
+def read_all_books(db: Annotated[Session, Depends(get_db)]):
     return db.query(models.BooksTable).all()
 
+
 @app.get("/books/{book_id}")
-def read_book(book_id:int,db:db_depends):
-    return db.query(models.BooksTable).filter(models.BooksTable.id==book_id).first()
+def read_book(book_id: int, db: Annotated[Session, Depends(get_db)]):
+    return db.query(models.BooksTable).filter(models.BooksTable.id == book_id).first()
+
 
 @app.post("/books/")
-def create_book(book: BookCreate, db: db_depends):
+def create_book(book: BookCreate, db: Annotated[Session, Depends(get_db)]):
     db_book = models.BooksTable(
         id=book.id,
         title=book.title,
@@ -79,8 +70,9 @@ def create_book(book: BookCreate, db: db_depends):
     db.refresh(db_book)
     return db_book
 
+
 @app.put("/books/{book_id}")
-def update_book(book_id: int, book: BookUpdate, db: db_depends):
+def update_book(book_id: int, book: BookUpdate, db: Annotated[Session, Depends(get_db)]):
     db_book = db.query(models.BooksTable).filter(models.BooksTable.id == book_id).first()
     if db_book:
         if book.title:
@@ -98,13 +90,15 @@ def update_book(book_id: int, book: BookUpdate, db: db_depends):
         return db_book
     return {"message": "Book not found"}
 
+
 @app.delete("/books/{book_id}")
-def delete_book(book_id:int,db:db_depends):
-    book=db.query(models.BooksTable).filter(models.BooksTable.id==book_id).first()
+def delete_book(book_id: int, db: Annotated[Session, Depends(get_db)]):
+    book = db.query(models.BooksTable).filter(models.BooksTable.id == book_id).first()
     if book:
         db.delete(book)
         db.commit()
-        return {"message":"Book deleted successfully"}
+        return {"message": "Book deleted successfully"}
     else:
-        return {"message":"Book not found"}
+        return {"message": "Book not found"}
+
 
