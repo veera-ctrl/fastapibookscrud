@@ -1,0 +1,41 @@
+# FastAPI Book API - Postman URLs
+# Base URL: http://localhost:8000
+
+# Get all books
+GET http://localhost:8000/
+
+# Get all books (alternate endpoint)
+GET http://localhost:8000/all-books
+
+# Get a specific book by ID
+GET http://localhost:8000/books/{book_id}
+# Example: GET http://localhost:8000/books/1
+
+# Create a new book
+POST http://localhost:8000/books/
+# Body (JSON):
+# {
+#     "id": 1,
+#     "title": "Book Title",
+#     "author": "Author Name",
+#     "description": "Book description",
+#     "rating": 5,
+#     "published_year": 2024
+# }
+
+# Update an existing book
+PUT http://localhost:8000/books/{book_id}
+# Example: PUT http://localhost:8000/books/1
+# Body (JSON) - all fields are optional:
+# {
+#     "title": "Updated Title",
+#     "author": "Updated Author",
+#     "description": "Updated description",
+#     "rating": 4,
+#     "published_year": 2023
+# }
+
+# Delete a book
+DELETE http://localhost:8000/books/{book_id}
+# Example: DELETE http://localhost:8000/books/1
+
